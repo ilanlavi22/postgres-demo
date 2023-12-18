@@ -17,7 +17,7 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title     String
-  content   String?
+  content   String? @db.Text
   published Boolean  @default(false)
   author    User?    @relation(fields: [authorId], references: [id])
   authorId  Int?
@@ -25,9 +25,35 @@ model Post {
 
 model User {
   id        Int      @id @default(autoincrement())
+  name      String?
+  username  String? @unique
+  email     String   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt  
+  posts     Post[]
+  accounts  Account[]
+}
+
+model Account {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String
+  provider  String
+  providerAccountId  String?
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type        String?
+  scope            String?
+  id_token          String?
+  session_state     String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  email     String   @unique
-  name      String?
-  posts     Post[]
+
+  @@unique([provider, providerAccountId])
 }
+
